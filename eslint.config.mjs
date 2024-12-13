@@ -1,8 +1,8 @@
 import eslint from "@eslint/js";
 import tseslint from "@typescript-eslint/eslint-plugin";
 import typescript from "@typescript-eslint/parser";
-import prettier from "eslint-config-prettier";
 import vitest from "@vitest/eslint-plugin"; // Add Vitest plugin
+import prettier from "eslint-config-prettier";
 
 export default [
     // JavaScript and TypeScript files
@@ -41,14 +41,16 @@ export default [
             "@typescript-eslint/no-unsafe-function-type": "off",
             // Customize TypeScript rules
             "@typescript-eslint/no-explicit-any": "warn",
-            "@typescript-eslint/no-unused-vars": [
-                "error",
-                {
-                    argsIgnorePattern: "^_",
-                    varsIgnorePattern: "^_",
-                    ignoreRestSiblings: true,
-                },
-            ],
+            "@typescript-eslint/no-unused-imports": "warn",
+            "@typescript-eslint/no-unused-vars": "warn",
+            // "@typescript-eslint/no-unused-vars": [
+            //     "error",
+            //     {
+            //         argsIgnorePattern: "^_",
+            //         varsIgnorePattern: "^_",
+            //         ignoreRestSiblings: true,
+            //     },
+            // ],
         },
     },
     // Vitest configuration

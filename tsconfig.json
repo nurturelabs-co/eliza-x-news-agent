@@ -1,0 +1,71 @@
+{
+    "files": [],
+    "references": [
+        {
+            "path": "agent"
+        },
+        {
+            "path": "packages/adapter-postgres"
+        },
+        {
+            "path": "packages/adapter-sqlite"
+        },
+        {
+            "path": "packages/client-auto"
+        },
+        {
+            "path": "packages/client-direct"
+        },
+        {
+            "path": "packages/client-discord"
+        },
+        {
+            "path": "packages/client-telegram"
+        },
+        {
+            "path": "packages/client-twitter"
+        },
+        {
+            "path": "packages/core"
+        },
+        {
+            "path": "packages/plugin-bootstrap"
+        },
+        {
+            "path": "packages/plugin-conflux"
+        },
+        {
+            "path": "packages/plugin-buttplug"
+        },
+        {
+            "path": "packages/plugin-image-generation"
+        },
+        {
+            "path": "packages/plugin-node"
+        },
+        {
+            "path": "packages/plugin-solana"
+        },
+        {
+            "path": "packages/plugin-0g"
+        },
+        {
+            "path": "packages/plugin-goat"
+        },
+        {
+            "path": "packages/plugin-starknet"
+        },
+        {
+            "path": "packages/plugin-icp"
+        },
+        {
+            "path": "packages/plugin-tee"
+        },
+        {
+            "path": "packages/plugin-coinbase"
+        },
+        {
+            "path": "packages/plugin-evm"
+        }
+    ]
+}

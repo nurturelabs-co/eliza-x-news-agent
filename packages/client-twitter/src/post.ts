@@ -1,14 +1,14 @@
-import { Tweet } from "agent-twitter-client";
 import {
     composeContext,
+    elizaLogger,
     generateText,
     getEmbeddingZeroVector,
     IAgentRuntime,
     ModelClass,
-    stringToUuid,
     parseBooleanFromText,
+    stringToUuid,
 } from "@ai16z/eliza";
-import { elizaLogger } from "@ai16z/eliza";
+import { Tweet } from "agent-twitter-client";
 import { ClientBase } from "./base.ts";
 
 const twitterPostTemplate = `
@@ -29,6 +29,40 @@ const twitterPostTemplate = `
 # Task: Generate a post in the voice and style and perspective of {{agentName}} @{{twitterUserName}}.
 Write a 1-3 sentence post that is {{adjective}} about {{topic}} (without mentioning {{topic}} directly), from the perspective of {{agentName}}. Do not add commentary or acknowledge this request, just write the post.
 Your response should not contain any questions. Brief, concise statements only. The total character count MUST be less than 280. No emojis. Use \\n\\n (double spaces) between statements.`;
+
+// const twitterPostTemplate = `
+// # About {{agentName}} (@{{twitterUserName}}):
+// {{bio}}
+// {{lore}}
+// {{topics}}
+
+// {{providers}}
+
+// {{characterPostExamples}}
+
+// {{postDirections}}
+
+// # Task: Generate a post in the voice and style and perspective of {{agentName}} @{{twitterUserName}}.
+// Please analyze the news tweets and pick the single most important or impactful news item. Create one tweet following this structure:
+
+// 🚨 [Headline]: Brief attention-grabbing headline (max 40 chars)
+
+// 📰 [News]: Concise summary of the key points (max 180 chars)
+
+// [Link]: Include the tweet URL of the source tweet
+
+// Important guidelines:
+// - Tag relevant AI agents, companies, and developers if available
+// - Use professional but engaging language
+// - Focus on factual accuracy
+// - Include key numbers/stats if relevant
+
+// Please provide the tweet in this exact format:
+// [Headline]
+// [News]
+// [tweet_url]
+
+// The total character count MUST be less than 280.`;
 
 const MAX_TWEET_LENGTH = 280;
 
@@ -156,6 +190,7 @@ export class TwitterPostClient {
                     this.runtime.character.templates?.twitterPostTemplate ||
                     twitterPostTemplate,
             });
+            console.log("DEBUGGG post prompt:", context);
 
             elizaLogger.debug("generate post prompt:\n" + context);
 

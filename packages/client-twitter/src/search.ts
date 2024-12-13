@@ -1,17 +1,16 @@
-import { SearchMode } from "agent-twitter-client";
-import { composeContext } from "@ai16z/eliza";
-import { generateMessageResponse, generateText } from "@ai16z/eliza";
-import { messageCompletionFooter } from "@ai16z/eliza";
 import {
+    composeContext,
     Content,
+    generateMessageResponse,
+    generateText,
     HandlerCallback,
     IAgentRuntime,
-    IImageDescriptionService,
+    messageCompletionFooter,
     ModelClass,
-    ServiceType,
     State,
+    stringToUuid,
 } from "@ai16z/eliza";
-import { stringToUuid } from "@ai16z/eliza";
+import { SearchMode } from "agent-twitter-client";
 import { ClientBase } from "./base";
 import { buildConversationThread, sendTweet, wait } from "./utils.ts";
 
@@ -47,9 +46,7 @@ export class TwitterSearchClient extends ClientBase {
 
     constructor(runtime: IAgentRuntime) {
         // Initialize the client and pass an optional callback to be called when the client is ready
-        super({
-            runtime,
-        });
+        super(runtime);
     }
 
     async onReady() {
@@ -108,7 +105,7 @@ export class TwitterSearchClient extends ClientBase {
 
             const prompt = `
   Here are some tweets related to the search term "${searchTerm}":
-  
+
   ${[...slicedTweets, ...homeTimeline]
       .filter((tweet) => {
           // ignore tweets where any of the thread tweets contain a tweet by the bot
@@ -126,7 +123,7 @@ export class TwitterSearchClient extends ClientBase {
   `
       )
       .join("\n")}
-  
+
   Which tweet is the most interesting and relevant for Ruby to reply to? Please provide only the ID of the tweet in your response.
   Notes:
     - Respond to English tweets only
@@ -226,22 +223,23 @@ export class TwitterSearchClient extends ClientBase {
 
             // Generate image descriptions using GPT-4 vision API
             const imageDescriptions = [];
-            for (const photo of selectedTweet.photos) {
-                const description = await this.runtime
-                    .getService<IImageDescriptionService>(
-                        ServiceType.IMAGE_DESCRIPTION
-                    )
-                    .getInstance()
-                    .describeImage(photo.url);
-                imageDescriptions.push(description);
-            }
+            // Commented out for now, as it's not working
+            // for (const photo of selectedTweet.photos) {
+            //     const description = await this.runtime
+            //         .getService<IImageDescriptionService>(
+            //             ServiceType.IMAGE_DESCRIPTION
+            //         )
+            //         .getInstance()
+            //         .describeImage(photo.url);
+            //     imageDescriptions.push(description);
+            // }
 
             let state = await this.runtime.composeState(message, {
                 twitterClient: this.twitterClient,
                 twitterUserName: this.runtime.getSetting("TWITTER_USERNAME"),
                 timeline: formattedHomeTimeline,
                 tweetContext: `${tweetBackground}
-  
+
   Original Post:
   By @${selectedTweet.username}
   ${selectedTweet.text}${replyContext.length > 0 && `\nReplies to original post:\n${replyContext}`}

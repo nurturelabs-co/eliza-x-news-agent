@@ -16,15 +16,14 @@ import {
     IDatabaseAdapter,
     IDatabaseCacheAdapter,
     ModelProviderName,
-    defaultCharacter,
     elizaLogger,
     settings,
     stringToUuid,
     validateCharacterConfig,
 } from "@ai16z/eliza";
 import { zgPlugin } from "@ai16z/plugin-0g";
-import { goatPlugin } from "@ai16z/plugin-goat";
 import { bootstrapPlugin } from "@ai16z/plugin-bootstrap";
+import { goatPlugin } from "@ai16z/plugin-goat";
 // import { buttplugPlugin } from "@ai16z/plugin-buttplug";
 import {
     coinbaseCommercePlugin,
@@ -32,8 +31,8 @@ import {
     tradePlugin,
 } from "@ai16z/plugin-coinbase";
 import { confluxPlugin } from "@ai16z/plugin-conflux";
-import { imageGenerationPlugin } from "@ai16z/plugin-image-generation";
 import { evmPlugin } from "@ai16z/plugin-evm";
+import { imageGenerationPlugin } from "@ai16z/plugin-image-generation";
 import { createNodePlugin } from "@ai16z/plugin-node";
 import { solanaPlugin } from "@ai16z/plugin-solana";
 import { teePlugin } from "@ai16z/plugin-tee";
@@ -43,6 +42,12 @@ import path from "path";
 import readline from "readline";
 import { fileURLToPath } from "url";
 import yargs from "yargs";
+import { mainCharacter } from "./mainCharacter.js";
+import {
+    setTwitterManager,
+    twitterNewsProvider,
+    twitterPostsProvider,
+} from "./twitterProvider.ts";
 
 const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
 const __dirname = path.dirname(__filename); // get the name of the directory
@@ -175,7 +180,7 @@ export async function loadCharacters(
 
     if (loadedCharacters.length === 0) {
         elizaLogger.info("No characters found, using default character");
-        loadedCharacters.push(defaultCharacter);
+        loadedCharacters.push(mainCharacter);
     }
 
     return loadedCharacters;
@@ -315,6 +320,7 @@ export async function initializeClients(
 
     if (clientTypes.includes("twitter")) {
         const twitterClients = await TwitterClientInterface.start(runtime);
+        setTwitterManager(twitterClients);
         clients.push(twitterClients);
     }
 
@@ -389,7 +395,7 @@ export function createAgent(
             getSecret(character, "WALLET_SECRET_SALT") ? teePlugin : null,
             getSecret(character, "ALCHEMY_API_KEY") ? goatPlugin : null,
         ].filter(Boolean),
-        providers: [],
+        providers: [twitterPostsProvider, twitterNewsProvider],
         actions: [],
         services: [],
         managers: [],
@@ -456,7 +462,7 @@ const startAgents = async () => {
 
     let charactersArg = args.characters || args.character;
 
-    let characters = [defaultCharacter];
+    let characters = [mainCharacter];
 
     if (charactersArg) {
         characters = await loadCharacters(charactersArg);
@@ -529,6 +535,10 @@ async function gracefulExit() {
     rl.close();
     process.exit(0);
 }
+
+process.on("uncaughtException", (error) => {
+    console.error("Uncaught Exception:", error);
+});
 
 rl.on("SIGINT", gracefulExit);
 rl.on("SIGTERM", gracefulExit);
